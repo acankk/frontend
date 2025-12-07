@@ -1,13 +1,32 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route
+} from "react-router-dom";
 
-function App() {
+import Login from "./pages/login.jsx";
+import Home from "./pages/home.jsx";
+import SignUp from "./pages/signup.jsx";
+
+
+function Layout() {
+ 
+
   return (
-
-    <div className="bg-black text-white p-10">
-      <Card>uhuy </Card>
-    </div>
-  )
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <Router>
+      <Layout />
+    </Router>
+  );
+}
