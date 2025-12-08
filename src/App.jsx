@@ -7,13 +7,12 @@ import {
 import Login from "./pages/login.jsx";
 import Home from "./pages/home.jsx";
 import SignUp from "./pages/signup.jsx";
-
+import Navbar from "./components/navbar.jsx"; 
 
 function Layout() {
- 
-
   return (
     <>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
