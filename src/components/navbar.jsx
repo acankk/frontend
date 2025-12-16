@@ -7,6 +7,7 @@ export default function Navbar() {
     { name: "Home", path: "/" },
     { name: "Login", path: "/login" },
     { name: "signup", path: "/signup" },
+    
   ];
 
   return (

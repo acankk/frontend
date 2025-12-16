@@ -9,6 +9,7 @@ import Home from "./pages/home.jsx";
 import SignUp from "./pages/signup.jsx";
 import Navbar from "./components/navbar.jsx"; 
 
+
 function Layout() {
   return (
     <>
@@ -23,6 +24,8 @@ function Layout() {
 }
 
 export default function App() {
+  console.log(import.meta.env.VITE_API_BASE_URL);
+
   return (
     <Router>
       <Layout />

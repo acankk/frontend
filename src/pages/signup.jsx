@@ -1,95 +1,92 @@
-import React from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
-  return (
-    <div className="min-h-screen w-full bg-black text-white flex items-center justify-center px-6">
-      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10">
-        
-        {/* LEFT TEXT SECTION */}
-        <div className="flex flex-col justify-center">
-          <h2 className="text-xl font-semibold tracking-wide mb-1">
-            WELCOME TO
-          </h2>
-          <h1 className="text-6xl font-extrabold mb-6">INOVARE</h1>
+  const navigate = useNavigate();
 
-          <p className="text-lg leading-relaxed text-gray-300">
-            Where Creativity Meets Simplicity; Professional Designs 
-            Crafted to Bring Your Ideas to Life
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6">
+
+      <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl p-10 flex flex-col md:flex-row gap-10">
+
+        {/* macOS dots */}
+        <div className="absolute flex gap-2 top-4 left-4">
+          <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="w-3 h-3 rounded-full bg-green-500" />
+        </div>
+
+        {/* LEFT */}
+        <div className="flex-1 flex flex-col justify-center mt-10 md:mt-0">
+          <h2 className="text-sm uppercase tracking-widest text-gray-300">
+            Join
+          </h2>
+          <h1 className="text-5xl font-bold mt-1">INOVARE</h1>
+          <p className="mt-5 text-gray-300 leading-relaxed text-lg">
+            Create your account and start building
+            beautifully crafted professional designs.
           </p>
         </div>
 
-        {/* RIGHT FORM CARD */}
-        <div className="w-full flex flex-col">
-          <h1 className="text-3xl font-bold text-center mb-6">DAFTAR</h1>
+        {/* RIGHT (FORM) */}
+        <div className="flex-1 flex flex-col justify-center">
+          <h2 className="text-2xl font-semibold mb-6">Daftar</h2>
 
-          <div className="w-full space-y-4">
-            {/* Input field */}
-            <div>
+          <div className="space-y-5">
+
+            <div className="space-y-2">
               <label className="text-sm text-gray-300">Nama</label>
-              <input
-                type="text"
-                className="w-full px-5 py-3 rounded-full bg-zinc-800 text-white outline-none focus:ring-2 focus:ring-white transition"
+              <Input
+                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
+                placeholder="Your name"
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <label className="text-sm text-gray-300">Email</label>
-              <input
+              <Input
                 type="email"
-                className="w-full px-5 py-3 rounded-full bg-zinc-800 text-white outline-none focus:ring-2 focus:ring-white transition"
+                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
+                placeholder="Type your email"
               />
             </div>
 
-            <div>
-              <label className="text-sm text-gray-300">No Hp</label>
-              <input
-                type="text"
-                className="w-full px-5 py-3 rounded-full bg-zinc-800 text-white outline-none focus:ring-2 focus:ring-white transition"
-              />
-            </div>
-
-            <div>
+            <div className="space-y-2">
               <label className="text-sm text-gray-300">Password</label>
-              <input
+              <Input
                 type="password"
-                className="w-full px-5 py-3 rounded-full bg-zinc-800 text-white outline-none focus:ring-2 focus:ring-white transition"
+                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
+                placeholder="••••••••"
               />
             </div>
 
-            {/* Register button */}
-            <button className="w-full py-3 rounded-full bg-white text-black font-semibold text-lg hover:opacity-90 transition mt-4">
-              Daftar
-            </button>
-
-            {/* Social login */}
-            <div className="flex items-center justify-center gap-4 mt-4">
-              <button className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full shadow">
-                <img
-                  src="https://www.google.com/favicon.ico"
-                  alt="Google"
-                  className="w-5 h-5"
-                />
-                Google
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full shadow">
-                <img
-                  src="https://www.facebook.com/favicon.ico"
-                  alt="Facebook"
-                  className="w-5 h-5"
-                />
-                Facebook
-              </button>
+            <div className="space-y-2">
+              <label className="text-sm text-gray-300">Confirm Password</label>
+              <Input
+                type="password"
+                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
+                placeholder="••••••••"
+              />
             </div>
 
-            {/* Login Redirect */}
-            <p className="text-center text-sm text-gray-400 mt-2">
-              Already have account?{" "}
-              <span className="text-white underline cursor-pointer">
+            <Button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl py-6 text-base shadow">
+              Register
+            </Button>
+
+            <p className="text-center text-sm text-gray-300">
+              Already have an account?{" "}
+              <span
+                className="underline cursor-pointer"
+                onClick={() => navigate("/login")}
+              >
                 Login
               </span>
             </p>
+
           </div>
         </div>
+
       </div>
     </div>
   );
