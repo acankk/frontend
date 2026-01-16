@@ -118,3 +118,31 @@
     @apply bg-background text-foreground;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* container scroll snap */
+.snap-container {
+  scroll-snap-type: y mandatory;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+/* setiap section */
+.snap-section {
+  scroll-snap-align: start;
+  height: 100vh;
+}
+
+/* hilangin scrollbar */
+.snap-container::-webkit-scrollbar {
+  display: none;
+}
+.snap-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+

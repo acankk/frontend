@@ -8,13 +8,13 @@ import { ENDPOINTS } from "@/lib/endpoints";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Email dan password wajib diisi");
+    if (!username || !password) {
+      alert("Username dan password wajib diisi");
       return;
     }
 
@@ -22,18 +22,23 @@ export default function Login() {
       setLoading(true);
 
       const res = await api.post(ENDPOINTS.LOGIN, {
-        email,
-        password,
+        username: username,
+        role: "user",
+        password: password,
       });
 
-      // simpan token
-      localStorage.setItem("token", res.data.token);
+      console.log("LOGIN RESPONSE:", res.data);
 
-      // redirect ke home
+      // simpan token
+      localStorage.setItem(
+        "token",
+        res.data.access_token || res.data.token
+      );
+
       navigate("/");
     } catch (err) {
-      alert("Login gagal");
-      console.error(err);
+      console.error("LOGIN ERROR:", err.response?.data || err.message);
+      alert(err.response?.data?.detail || "Login gagal");
     } finally {
       setLoading(false);
     }
@@ -41,7 +46,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6">
-
       <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl p-10 flex flex-col md:flex-row gap-10">
 
         {/* macOS dots */}
@@ -58,25 +62,23 @@ export default function Login() {
           </h2>
           <h1 className="text-5xl font-bold mt-1">INOVARE</h1>
           <p className="mt-5 text-gray-300 leading-relaxed text-lg">
-            Where creativity meets simplicity —
-            beautifully crafted professional designs that bring your ideas to life.
+            Where creativity meets simplicity — beautifully crafted professional
+            designs that bring your ideas to life.
           </p>
         </div>
 
-        {/* RIGHT (FORM) */}
+        {/* RIGHT */}
         <div className="flex-1 flex flex-col justify-center">
           <h2 className="text-2xl font-semibold mb-6">Masuk</h2>
 
           <div className="space-y-5">
-
             <div className="space-y-2">
-              <label className="text-sm text-gray-300">Email</label>
+              <label className="text-sm text-gray-300">Username</label>
               <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="bg-white/20 border-white/30 text-white placeholder-gray-400"
-                placeholder="Type your email"
+                placeholder="Type your username"
               />
             </div>
 
@@ -108,7 +110,6 @@ export default function Login() {
                 Create
               </span>
             </p>
-
           </div>
         </div>
 

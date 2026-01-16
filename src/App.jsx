@@ -1,34 +1,37 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import Navbar from "@/components/navbar";
 
-import Login from "./pages/login.jsx";
-import Home from "./pages/home.jsx";
-import SignUp from "./pages/signup.jsx";
-import Navbar from "./components/navbar.jsx"; 
-
+import Home from "@/pages/home";
+import Login from "@/pages/login";
+import Signup from "@/pages/signup";
+import Wishlist from "@/pages/wishlist";
+import Profile from "@/pages/profile";
 
 function Layout() {
+  const location = useLocation();
+
+  // navbar tidak muncul di login & signup
+  const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+
   return (
     <>
-      <Navbar />
+      {!hideNavbar && <Navbar />}
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   );
 }
 
 export default function App() {
-  console.log(import.meta.env.VITE_API_BASE_URL);
-
   return (
-    <Router>
+    <BrowserRouter>
       <Layout />
-    </Router>
+    </BrowserRouter>
   );
 }

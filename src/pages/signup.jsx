@@ -1,16 +1,48 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import api from "@/lib/api";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 export default function SignUp() {
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    if (!email || !username || !password ) {
+      alert("Semua field wajib diisi");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await api.post(ENDPOINTS.REGISTER, {
+        email,
+        username,
+        password,
+      });
+
+      alert("Register berhasil, silakan login");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      alert(err?.response?.data?.detail || "Register gagal");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6">
-
       <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl p-10 flex flex-col md:flex-row gap-10">
 
-        {/* macOS dots */}
+        {/* dots */}
         <div className="absolute flex gap-2 top-4 left-4">
           <div className="w-3 h-3 rounded-full bg-red-500" />
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
@@ -24,22 +56,23 @@ export default function SignUp() {
           </h2>
           <h1 className="text-5xl font-bold mt-1">INOVARE</h1>
           <p className="mt-5 text-gray-300 leading-relaxed text-lg">
-            Create your account and start building
-            beautifully crafted professional designs.
+            Create your account and start building beautifully crafted professional designs.
           </p>
         </div>
 
-        {/* RIGHT (FORM) */}
+        {/* RIGHT */}
         <div className="flex-1 flex flex-col justify-center">
           <h2 className="text-2xl font-semibold mb-6">Daftar</h2>
 
           <div className="space-y-5">
 
             <div className="space-y-2">
-              <label className="text-sm text-gray-300">Nama</label>
+              <label className="text-sm text-gray-300">Username</label>
               <Input
-                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
-                placeholder="Your name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="bg-white/20 border-white/30 text-white"
+                placeholder="Your username"
               />
             </div>
 
@@ -47,7 +80,9 @@ export default function SignUp() {
               <label className="text-sm text-gray-300">Email</label>
               <Input
                 type="email"
-                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-white/20 border-white/30 text-white"
                 placeholder="Type your email"
               />
             </div>
@@ -56,22 +91,20 @@ export default function SignUp() {
               <label className="text-sm text-gray-300">Password</label>
               <Input
                 type="password"
-                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-white/20 border-white/30 text-white"
                 placeholder="••••••••"
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm text-gray-300">Confirm Password</label>
-              <Input
-                type="password"
-                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
-                placeholder="••••••••"
-              />
-            </div>
 
-            <Button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl py-6 text-base shadow">
-              Register
+            <Button
+              onClick={handleSignup}
+              disabled={loading}
+              className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl py-6 text-base shadow"
+            >
+              {loading ? "Loading..." : "Register"}
             </Button>
 
             <p className="text-center text-sm text-gray-300">
