@@ -53,10 +53,9 @@ export default function Contact() {
               </div>
 
               <div>
-                <p className="font-semibold mb-1">WhatsApp</p>
+                <p className="font-semibold mb-1">Telepon</p>
                 <p className="text-gray-400">
-                  08xxxxxxxxxx <br /> 08xxxxxxxxxx
-                </p>
+                  08xxxxxxxxxx</p>
               </div>
 
               <div>

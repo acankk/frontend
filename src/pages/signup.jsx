@@ -39,8 +39,9 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6">
-      <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl p-10 flex flex-col md:flex-row gap-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-black text-white p-6">
+      <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl min-h-[420px] p-10 flex flex-col md:flex-row gap-10">
+
 
         {/* dots */}
         <div className="absolute flex gap-2 top-4 left-4">
@@ -94,7 +95,7 @@ export default function SignUp() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-white/20 border-white/30 text-white"
-                placeholder="••••••••"
+                placeholder="********"
               />
             </div>
 
@@ -102,7 +103,7 @@ export default function SignUp() {
             <Button
               onClick={handleSignup}
               disabled={loading}
-              className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl py-6 text-base shadow"
+              className="w-full bg-white/20 hover:bg-violet-500 backdrop-blur text-white rounded-xl py-6 text-base shadow"
             >
               {loading ? "Loading..." : "Register"}
             </Button>

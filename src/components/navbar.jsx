@@ -1,33 +1,57 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Heart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+
   const [activeSection, setActiveSection] = useState("home");
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   const isWishlist = location.pathname === "/wishlist";
-  const isAuth =
-    location.pathname === "/login" || location.pathname === "/signup";
 
   const handleScrollMenu = (id) => {
     if (location.pathname === "/") {
       const el = document.getElementById(id);
-      el?.scrollIntoView({ behavior: "auto" });
+      el?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate(`/?scroll=${id}`);
     }
   };
 
-  // scroll spy (khusus home container)
+  /* AUTO HIDE NAVBAR */
+  useEffect(() => {
+    const container = document.getElementById("home-scroll") || window;
+
+    const getScroll = () =>
+      container === window ? window.scrollY : container.scrollTop;
+
+    const handleScroll = () => {
+      const currentScrollY = getScroll();
+
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY, location.pathname]);
+
+  /* SCROLL SPY HOME */
   useEffect(() => {
     if (location.pathname !== "/") return;
 
     const container = document.getElementById("home-scroll");
     if (!container) return;
 
-    const sections = ["home", "about", "template", "contact"];
+    const sections = ["home", "about", "service", "template", "developer", "contact"];
 
     const onScroll = () => {
       const scrollPos = container.scrollTop + container.clientHeight / 2;
@@ -54,12 +78,20 @@ export default function Navbar() {
 
   return (
     <>
-      {/* NAVBAR ATAS */}
-      <div className="fixed top-0 left-0 w-full h-16 px-10 flex items-center justify-between bg-neutral-900/90 backdrop-blur-md text-white z-[9999]">
+      {/* ================= NAVBAR ATAS ================= */}
+      <div
+        className={`fixed top-0 inset-x-0 h-16 px-10 flex items-center justify-between 
+        bg-neutral-900/60 backdrop-blur-xl text-white z-[9999]
+        shadow-[0_10px_30px_rgba(0,0,0,0.4)]
+        transition-all duration-300 ease-out
+        ${showNavbar ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}`}
+      >
         <h1
           onClick={() => {
             if (location.pathname === "/") {
-              document.getElementById("home")?.scrollIntoView({ behavior: "auto" });
+              document
+                .getElementById("home")
+                ?.scrollIntoView({ behavior: "smooth" });
             } else {
               navigate("/");
             }
@@ -81,19 +113,21 @@ export default function Navbar() {
           <button
             onClick={() => navigate("/profile")}
             className={`w-10 h-10 flex items-center justify-center rounded-full transition
-              ${location.pathname === "/profile"
-                ? "bg-violet-500"
-                : "border border-white/20 hover:bg-white/10"}`}
+              ${
+                location.pathname === "/profile"
+                  ? "bg-violet-500"
+                  : "bg-white/10 hover:bg-white/20"
+              }`}
           >
             <User size={20} />
           </button>
         </div>
       </div>
 
-      {/* NAVBAR BAWAH */}
+      {/*  NAVBAR BAWAH */}
       {location.pathname === "/" && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-neutral-800 px-3 py-2 rounded-full flex gap-2 text-gray-300 shadow-xl backdrop-blur-md items-center z-[9999]">
-          {["about", "template", "contact"].map((item) => (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-neutral-800/80 backdrop-blur-xl px-3 py-2 rounded-full flex gap-2 text-gray-300 shadow-xl items-center z-[9999]">
+          {["about", "service", "template", "developer", "contact"].map((item) => (
             <button
               key={item}
               onClick={() => handleScrollMenu(item)}

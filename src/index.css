@@ -136,13 +136,5 @@ html {
   height: 100vh;
 }
 
-/* hilangin scrollbar */
-.snap-container::-webkit-scrollbar {
-  display: none;
-}
-.snap-container {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
 
 

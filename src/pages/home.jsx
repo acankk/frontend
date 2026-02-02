@@ -3,11 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import About from "./about";
 import Templates from "./product";
 import Contact from "./contact";
+import Developer from "./developer";
+import Service from "./service";
 
 export default function Home() {
   const [params] = useSearchParams();
 
-  // auto scroll dari navbar (?scroll=about, dll)
+  // auto scroll dari navbar (scroll=about, dll)
   useEffect(() => {
     const target = params.get("scroll");
     if (target) {
@@ -40,15 +42,26 @@ export default function Home() {
         <About />
       </section>
 
+      {/* SERVICE */}
+      <section id="service" className="min-h-screen snap-start">
+        <Service />
+      </section>
+
       {/* TEMPLATE */}
       <section id="template" className="min-h-screen snap-start">
         <Templates />
+      </section>
+
+      {/* DEVELOPER */}
+      <section id="developer" className="min-h-screen snap-start">
+        <Developer />
       </section>
 
       {/* CONTACT */}
       <section id="contact" className="min-h-screen snap-start">
         <Contact />
       </section>
+
     </div>
   );
 }

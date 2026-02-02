@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👁️
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -22,20 +24,22 @@ export default function Login() {
       setLoading(true);
 
       const res = await api.post(ENDPOINTS.LOGIN, {
-        username: username,
-        role: "user",
-        password: password,
+        username,
+        password,
       });
 
-      console.log("LOGIN RESPONSE:", res.data);
+      const token = res.data.access_token || res.data.token;
+      if (!token) return alert("Token tidak ditemukan");
 
-      // simpan token
-      localStorage.setItem(
-        "token",
-        res.data.access_token || res.data.token
-      );
+      localStorage.setItem("token", token);
 
-      navigate("/");
+      const meRes = await api.get(ENDPOINTS.ME);
+      const role = meRes.data.role;
+      localStorage.setItem("role", role);
+
+      if (role === "admin") navigate("/admin/products");
+      else navigate("/");
+
     } catch (err) {
       console.error("LOGIN ERROR:", err.response?.data || err.message);
       alert(err.response?.data?.detail || "Login gagal");
@@ -45,9 +49,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-6">
-      <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl p-10 flex flex-col md:flex-row gap-10">
-
+    <div className="min-h-screen w-full flex items-center justify-center bg-black text-white p-6">
+      <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl rounded-2xl w-full max-w-4xl min-h-[470px] p-10 flex flex-col md:flex-row gap-10">
         {/* macOS dots */}
         <div className="absolute flex gap-2 top-4 left-4">
           <div className="w-3 h-3 rounded-full bg-red-500" />
@@ -62,7 +65,7 @@ export default function Login() {
           </h2>
           <h1 className="text-5xl font-bold mt-1">INOVARE</h1>
           <p className="mt-5 text-gray-300 leading-relaxed text-lg">
-            Where creativity meets simplicity — beautifully crafted professional
+            Where creativity meets simplicity - beautifully crafted professional
             designs that bring your ideas to life.
           </p>
         </div>
@@ -72,6 +75,7 @@ export default function Login() {
           <h2 className="text-2xl font-semibold mb-6">Masuk</h2>
 
           <div className="space-y-5">
+            {/* USERNAME */}
             <div className="space-y-2">
               <label className="text-sm text-gray-300">Username</label>
               <Input
@@ -82,21 +86,33 @@ export default function Login() {
               />
             </div>
 
+            {/* PASSWORD */}
             <div className="space-y-2">
               <label className="text-sm text-gray-300">Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
-                placeholder="••••••••"
-              />
+
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-white/20 border-white/30 text-white placeholder-gray-400 pr-10"
+                  placeholder="********"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <Button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-xl py-6 text-base shadow"
+              className="w-full bg-white/20 hover:bg-violet-500 backdrop-blur text-white rounded-xl py-6 text-base shadow"
             >
               {loading ? "Loading..." : "Login"}
             </Button>
