@@ -19,6 +19,7 @@ export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -30,9 +31,12 @@ export default function AdminProducts() {
   });
 
   const [previewMain, setPreviewMain] = useState(null);
-  const [previewDetails, setPreviewDetails] = useState([]);
 
-  /* ================= FETCH ================= */
+  // iamge details
+  const [existingDetails, setExistingDetails] = useState([]); 
+  const [previewDetails, setPreviewDetails] = useState([]);   
+
+  /* FETCH  */
   const fetchProducts = async () => {
     const res = await api.get(ENDPOINTS.PRODUCTS);
     setProducts(res.data?.data || []);
@@ -42,7 +46,7 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
-  /* ================= FORM ================= */
+  /*  FORM  */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
@@ -57,17 +61,25 @@ export default function AdminProducts() {
 
   const handleDetailImages = (e) => {
     const files = Array.from(e.target.files || []);
-    setForm((p) => ({ ...p, detail_images: files }));
-    setPreviewDetails(files.map((f) => URL.createObjectURL(f)));
+    if (!files.length) return;
+
+    setForm((p) => ({
+      ...p,
+      detail_images: [...p.detail_images, ...files],
+    }));
+
+    setPreviewDetails((p) => [
+      ...p,
+      ...files.map((f) => URL.createObjectURL(f)),
+    ]);
   };
 
-  /* ================= REMOVE (FE ONLY) ================= */
   const removeMainImage = () => {
     setForm((p) => ({ ...p, main_image: null }));
     setPreviewMain(null);
   };
 
-  const removeDetailImage = (index) => {
+  const removeNewDetailImage = (index) => {
     setForm((p) => ({
       ...p,
       detail_images: p.detail_images.filter((_, i) => i !== index),
@@ -86,10 +98,11 @@ export default function AdminProducts() {
     });
     setPreviewMain(null);
     setPreviewDetails([]);
+    setExistingDetails([]);
     setEditId(null);
   };
 
-  /* ================= FORM DATA ================= */
+  /* FORM DATA  */
   const buildFormData = () => {
     const fd = new FormData();
     fd.append("name", form.name);
@@ -97,37 +110,46 @@ export default function AdminProducts() {
     fd.append("tech", form.tech);
     fd.append("description", form.description);
 
-    if (form.main_image) fd.append("main_image", form.main_image);
-    form.detail_images.forEach((f) => fd.append("detail_images[]", f));
+    // backend ALL images as "files"
+    if (form.main_image) fd.append("files", form.main_image);
+    form.detail_images.forEach((f) => fd.append("files", f));
 
     return fd;
   };
 
-  /* ================= SAVE ================= */
+  /*  SAVE */
   const handleSave = async () => {
-    const url = editId
-      ? ENDPOINTS.ADMIN_UPDATE_PRODUCT(editId)
-      : ENDPOINTS.PRODUCTS;
+    setLoading(true);
+    try {
+      const url = editId
+        ? ENDPOINTS.ADMIN_UPDATE_PRODUCT(editId)
+        : ENDPOINTS.ADMIN_CREATE_PRODUCT;
 
-    const method = editId ? api.patch : api.post;
+      const method = editId ? api.patch : api.post;
 
-    await method(url, buildFormData(), {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+      await method(url, buildFormData(), {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-    fetchProducts();
-    setOpen(false);
-    resetForm();
+      fetchProducts();
+      setOpen(false);
+      resetForm();
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menyimpan product");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /* ================= DELETE PRODUCT ================= */
+  /*  DELETE  */
   const handleDelete = async (id) => {
     if (!confirm("Yakin ingin menghapus product?")) return;
     await api.delete(ENDPOINTS.ADMIN_DELETE_PRODUCT(id));
     fetchProducts();
   };
 
-  /* ================= EDIT ================= */
+  /* EDIT  */
   const openEdit = (p) => {
     setEditId(p.id);
     setForm({
@@ -138,18 +160,23 @@ export default function AdminProducts() {
       main_image: null,
       detail_images: [],
     });
+
     setPreviewMain(p.image_url?.[0] || null);
-    setPreviewDetails(p.image_url?.slice(1) || []);
+    setExistingDetails(p.image_url?.slice(1) || []);
+    setPreviewDetails([]);
     setOpen(true);
   };
 
-  /* ================= UI ================= */
+  /*  UI  */
   return (
     <div className="min-h-screen bg-black text-white flex">
       {/* SIDEBAR */}
       <aside className="w-64 bg-neutral-900 border-r border-white/10 p-6">
         <h2 className="text-xl font-bold mb-10">ADMIN PANEL</h2>
-        <div className="px-4 py-2 rounded-lg bg-white/10">Products</div>
+        <div className="space-y-3">
+          <div className="px-4 py-2 rounded-lg bg-violet-500">Products</div>
+          <div className="px-4 py-2 rounded-lg bg-white/10">Jasa</div>
+        </div>
       </aside>
 
       {/* MAIN */}
@@ -170,9 +197,7 @@ export default function AdminProducts() {
               <TableRow>
                 {["ID", "Image", "Name", "Price", "Tech", "Desc", "Action"].map(
                   (h) => (
-                    <TableHead key={h} className="text-white">
-                      {h}
-                    </TableHead>
+                    <TableHead key={h} className="text-white">{h}</TableHead>
                   )
                 )}
               </TableRow>
@@ -180,7 +205,7 @@ export default function AdminProducts() {
 
             <TableBody>
               {products.map((p) => (
-                <TableRow key={p.id}>
+                <TableRow key={p.id} className="hover:bg-violet-500/60">
                   <TableCell>{p.id}</TableCell>
                   <TableCell>
                     <img
@@ -217,9 +242,8 @@ export default function AdminProducts() {
       {open && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
           <div className="w-full max-w-xl bg-neutral-900 rounded-2xl border border-white/10 max-h-[90vh] flex flex-col">
-            
             {/* HEADER */}
-            <div className="px-6 py-4 border-b border-white/10 flex justify-between shrink-0">
+            <div className="px-6 py-4 border-b border-white/10 flex justify-between">
               <h2 className="text-lg font-semibold">
                 {editId ? "Edit Product" : "Add Product"}
               </h2>
@@ -228,39 +252,28 @@ export default function AdminProducts() {
               </button>
             </div>
 
-            {/* BODY (SCROLLABLE + THIN SCROLLBAR) */}
-            <div
-              className="
-                p-6 space-y-5 overflow-y-auto
-                scrollbar-thin
-                scrollbar-thumb-white/20
-                hover:scrollbar-thumb-violet-500
-                scrollbar-track-transparent
-              "
-            >
+            {/* BODY */}
+            <div className="p-6 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-violet-500">
               <Input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
               <Input name="price" value={form.price} onChange={handleChange} placeholder="Price" />
               <Input name="tech" value={form.tech} onChange={handleChange} placeholder="Tech" />
 
               {/* MAIN IMAGE */}
-              <div className="space-y-2">
-                <label className="text-sm text-white/80">Main Image (opsional)</label>
-                <label>
-                  <input type="file" accept="image/*" onChange={handleMainImage} className="hidden" />
-                  <div className="inline-block px-4 py-2 bg-white/10 hover:bg-violet-500 rounded-lg cursor-pointer text-sm">
+              <div>
+                <label className="text-sm text-white/70">Main Image</label>
+                <label className="block mt-2">
+                  <input type="file" accept="image/*" onChange={handleMainImage} hidden />
+                  <div className="inline-block px-4 py-2 bg-white/10 hover:bg-violet-500 rounded-lg cursor-pointer">
                     {previewMain ? "Ganti Gambar" : "Pilih Gambar"}
                   </div>
                 </label>
 
                 {previewMain && (
-                  <div className="relative group">
-                    <img
-                      src={previewMain}
-                      className="h-32 w-full object-cover rounded-xl border border-white/10"
-                    />
+                  <div className="relative mt-3">
+                    <img src={previewMain} className="h-32 w-full object-cover rounded-xl" />
                     <button
                       onClick={removeMainImage}
-                      className="absolute top-2 right-2 p-2 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition hover:bg-violet-500 active:bg-violet-600"
+                      className="absolute top-2 right-2 p-2 bg-black/60 rounded-full hover:bg-violet-500"
                     >
                       <X size={16} />
                     </button>
@@ -269,34 +282,33 @@ export default function AdminProducts() {
               </div>
 
               {/* DETAIL IMAGES */}
-              <div className="space-y-2">
-                <label className="text-sm text-white/80">Detail Images (opsional)</label>
-                <label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleDetailImages}
-                    className="hidden"
-                  />
-                  <div className="inline-block px-4 py-2 bg-white/10 hover:bg-violet-500 rounded-lg cursor-pointer text-sm">
-                    {previewDetails.length > 0
-                      ? "Tambah / Ganti Gambar"
-                      : "Pilih Beberapa Gambar"}
+              <div>
+                <label className="text-sm text-white/70">Detail Images</label>
+                <label className="block mt-2">
+                  <input type="file" accept="image/*" multiple onChange={handleDetailImages} hidden />
+                  <div className="inline-block px-4 py-2 bg-white/10 hover:bg-violet-500 rounded-lg cursor-pointer">
+                    Pilih Beberapa Gambar
                   </div>
                 </label>
 
+                {/* IMAGE LAMA */}
+                {existingDetails.length > 0 && (
+                  <div className="grid grid-cols-4 gap-2 mt-3">
+                    {existingDetails.map((img, i) => (
+                      <img key={`old-${i}`} src={img} className="h-20 w-full object-cover rounded-lg" />
+                    ))}
+                  </div>
+                )}
+
+                {/* IMAGE BARU */}
                 {previewDetails.length > 0 && (
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-2 mt-3">
                     {previewDetails.map((img, i) => (
-                      <div key={i} className="relative group">
-                        <img
-                          src={img}
-                          className="h-20 w-full object-cover rounded-lg border border-white/10"
-                        />
+                      <div key={`new-${i}`} className="relative">
+                        <img src={img} className="h-20 w-full object-cover rounded-lg" />
                         <button
-                          onClick={() => removeDetailImage(i)}
-                          className="absolute top-1 right-1 p-1.5 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition hover:bg-violet-500 active:bg-violet-600"
+                          onClick={() => removeNewDetailImage(i)}
+                          className="absolute top-1 right-1 p-1 bg-black/60 rounded-full hover:bg-violet-500"
                         >
                           <X size={14} />
                         </button>
@@ -317,15 +329,15 @@ export default function AdminProducts() {
             </div>
 
             {/* FOOTER */}
-            <div className="p-6 border-t border-white/10 shrink-0">
+            <div className="p-6 border-t border-white/10">
               <Button
                 onClick={handleSave}
+                disabled={loading}
                 className="w-full bg-white/10 hover:bg-violet-500"
               >
-                {editId ? "Update Product" : "Add Product"}
+                {loading ? "Saving..." : editId ? "Update Product" : "Add Product"}
               </Button>
             </div>
-
           </div>
         </div>
       )}

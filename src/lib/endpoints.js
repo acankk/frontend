@@ -1,6 +1,7 @@
 export const ENDPOINTS = {
   PRODUCTS: "/api/products/",
   PRODUCT_DETAIL: (id) => `/api/products/${id}`,
+  ADMIN_CREATE_PRODUCT: "/api/products/create",
 
   // AUTH
   LOGIN: "/auth/login",
