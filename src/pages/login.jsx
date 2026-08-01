@@ -2,16 +2,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import api from "@/lib/api";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+
+
+import {
+  loginRequest,
+  profileRequest,
+} from "@/lib/auth";
 
 export default function Login() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👁️
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -23,26 +27,45 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await api.post(ENDPOINTS.LOGIN, {
+      const res = await loginRequest({
         username,
         password,
       });
 
-      const token = res.data.access_token || res.data.token;
-      if (!token) return alert("Token tidak ditemukan");
+      
+      const access = res.data.access;
+      const refresh = res.data.refresh;
 
-      localStorage.setItem("token", token);
+      if (!access) {
+        alert("Access token tidak ditemukan");
+        return;
+      }
 
-      const meRes = await api.get(ENDPOINTS.ME);
-      const role = meRes.data.role;
-      localStorage.setItem("role", role);
+      localStorage.setItem("access", access);
+      localStorage.setItem("refresh", refresh);
 
-      if (role === "admin") navigate("/admin/products");
-      else navigate("/");
+      const meRes = await profileRequest();
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify(meRes.data)
+      );
+
+      const role = meRes.data.group;
+
+      if (role === "Admin") {
+        navigate("/admin/products");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      console.error("LOGIN ERROR:", err.response?.data || err.message);
-      alert(err.response?.data?.detail || "Login gagal");
+      console.error(err.response?.data || err.message);
+
+      alert(
+        err.response?.data?.message ||
+          err.response?.data?.detail ||
+          "Login gagal"
+      );
     } finally {
       setLoading(false);
     }
@@ -63,48 +86,63 @@ export default function Login() {
           <h2 className="text-sm uppercase tracking-widest text-gray-300">
             Welcome to
           </h2>
+
           <h1 className="text-5xl font-bold mt-1">INOVARE</h1>
+
           <p className="mt-5 text-gray-300 leading-relaxed text-lg">
-            Where creativity meets simplicity - beautifully crafted professional
-            designs that bring your ideas to life.
+            Where creativity meets simplicity - beautifully crafted
+            professional designs that bring your ideas to life.
           </p>
         </div>
 
         {/* RIGHT */}
         <div className="flex-1 flex flex-col justify-center">
-          <h2 className="text-2xl font-semibold mb-6">Masuk</h2>
+          <h2 className="text-2xl font-semibold mb-6">
+            Masuk
+          </h2>
 
           <div className="space-y-5">
             {/* USERNAME */}
             <div className="space-y-2">
-              <label className="text-sm text-gray-300">Username</label>
+              <label className="text-sm text-gray-300">
+                Username
+              </label>
+
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
                 placeholder="Type your username"
+                className="bg-white/20 border-white/30 text-white placeholder-gray-400"
               />
             </div>
 
             {/* PASSWORD */}
             <div className="space-y-2">
-              <label className="text-sm text-gray-300">Password</label>
+              <label className="text-sm text-gray-300">
+                Password
+              </label>
 
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-white/20 border-white/30 text-white placeholder-gray-400 pr-10"
                   placeholder="********"
+                  className="bg-white/20 border-white/30 text-white placeholder-gray-400 pr-10"
                 />
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
@@ -118,7 +156,7 @@ export default function Login() {
             </Button>
 
             <p className="text-center text-sm text-gray-300">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <span
                 className="underline cursor-pointer"
                 onClick={() => navigate("/signup")}
@@ -126,9 +164,15 @@ export default function Login() {
                 Create
               </span>
             </p>
+            <button
+              onClick={() => navigate("/")}
+            className="mx-auto flex items-center gap-2 text-sm text-gray-400 hover:text-white transition"
+            >
+              <ArrowLeft size={16} />
+              Back to Home
+            </button>
           </div>
         </div>
-
       </div>
     </div>
   );

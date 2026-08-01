@@ -1,21 +1,26 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+
 import About from "./about";
 import Templates from "./product";
 import Contact from "./contact";
-import Developer from "./developer";
 import Service from "./service";
+import Team from "./team";
 
 export default function Home() {
   const [params] = useSearchParams();
 
-  // auto scroll dari navbar (scroll=about, dll)
+  // Auto scroll dari navbar
   useEffect(() => {
     const target = params.get("scroll");
+
     if (target) {
       requestAnimationFrame(() => {
         const el = document.getElementById(target);
-        el?.scrollIntoView({ behavior: "auto" });
+
+        el?.scrollIntoView({
+          behavior: "auto",
+        });
       });
     }
   }, [params]);
@@ -30,7 +35,10 @@ export default function Home() {
         id="home"
         className="min-h-screen snap-start flex flex-col items-center justify-center text-center px-4"
       >
-        <h1 className="text-6xl font-extrabold">INOVARE</h1>
+        <h1 className="text-6xl font-extrabold">
+          INOVARE
+        </h1>
+
         <p className="text-lg text-gray-300 mt-4 max-w-2xl mx-auto leading-relaxed">
           Where Creativity Meets Simplicity; Professional Designs Crafted to Bring
           Your Ideas to Life
@@ -38,27 +46,42 @@ export default function Home() {
       </section>
 
       {/* ABOUT */}
-      <section id="about" className="min-h-screen snap-start">
+      <section
+        id="about"
+        className="min-h-screen snap-start"
+      >
         <About />
       </section>
 
       {/* SERVICE */}
-      <section id="service" className="min-h-screen snap-start">
+      <section
+        id="service"
+        className="min-h-screen snap-start"
+      >
         <Service />
       </section>
 
-      {/* TEMPLATE */}
-      <section id="template" className="min-h-screen snap-start">
+      {/* PRODUCT */}
+      <section
+        id="template"
+        className="min-h-screen snap-start"
+      >
         <Templates />
       </section>
 
-      {/* DEVELOPER */}
-      <section id="developer" className="min-h-screen snap-start">
-        <Developer />
+      {/* TEAM */}
+      <section
+        id="team"
+        className="min-h-screen snap-start"
+      >
+        <Team />
       </section>
 
       {/* CONTACT */}
-      <section id="contact" className="min-h-screen snap-start">
+      <section
+        id="contact"
+        className="min-h-screen snap-start"
+      >
         <Contact />
       </section>
 

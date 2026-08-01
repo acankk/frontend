@@ -1,83 +1,55 @@
 import Navbar from "@/components/navbar";
-import { Card, CardContent } from "@/components/ui/card";
+import aboutImage from "@/assets/about.jpg";
 
 export default function About() {
   return (
     <div className="min-h-screen w-full bg-black text-white overflow-hidden">
       <Navbar />
 
-      <div className="min-h-screen px-6 md:px-20 pt-32 flex items-center">
-        <div className="w-full grid md:grid-cols-2 gap-16 items-center">
-
-          {/* LEFT TEXT */}
-          <div className="space-y-8 max-w-xl">
+      <section className="min-h-screen px-6 md:px-20 pt-32">
+        <div className="max-w-7xl mx-auto h-[calc(100vh-8rem)] grid md:grid-cols-[1.1fr_0.9fr] gap-20 items-center">
+          {/* LEFT */}
+          <div className="max-w-xl space-y-8 -translate-y-18">
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-widest">
               ABOUT
             </h1>
 
-            <p className="text-white text-lg leading-relaxed">
-              At Inovare, we provide modern and customizable design templates to help you
-              create professional visuals with ease. From branding materials to social media
-              graphics, our templates are crafted to support various creative needs.
+            <p className="text-lg leading-9 text-gray-300">
+              At Inovare, we provide modern and customizable design templates
+              to help you create professional visuals with ease. From branding
+              materials to social media graphics, our templates are crafted to
+              support various creative needs.
             </p>
 
-            <p className="text-white text-lg leading-relaxed">
-              With a user-friendly editing experience, you can personalize every detail to match
-              your style and goals. Inovare is here to save your time, elevate your design quality,
-              and bring your ideas to life effortlessly.
+            <p className="text-lg leading-9 text-gray-300">
+              With a user-friendly editing experience, you can personalize every
+              detail to match your style and goals. Inovare is here to save your
+              time, elevate your design quality, and bring your ideas to life
+              effortlessly.
             </p>
           </div>
 
-          {/* RIGHT IMAGES - ZIG ZAG */}
-          <div className="grid grid-cols-2 gap-4 max-w-md ml-auto">
-
-            {/* kiri atas - kecil */}
-            <Card className="bg-neutral-900/80 border border-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] transition">
-              <CardContent className="p-0">
-                <img
-                  src="/no-image.png"
-                  alt="about"
-                  className="w-full h-36 object-cover"
-                />
-              </CardContent>
-            </Card>
-
-            {/* kanan atas - tinggi */}
-            <Card className="row-span-2 bg-neutral-900/80 border border-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] transition">
-              <CardContent className="p-0 h-full">
-                <img
-                  src="/no-image.png"
-                  alt="about"
-                  className="w-full h-full object-cover"
-                />
-              </CardContent>
-            </Card>
-
-            {/* kiri bawah - tinggi */}
-            <Card className="row-span-2 bg-neutral-900/80 border border-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] transition">
-              <CardContent className="p-0 h-full">
-                <img
-                  src="/no-image.png"
-                  alt="about"
-                  className="w-full h-full object-cover"
-                />
-              </CardContent>
-            </Card>
-
-            {/* kanan bawah - kecil */}
-            <Card className="bg-neutral-900/80 border border-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] transition">
-              <CardContent className="p-0">
-                <img
-                  src="/no-image.png"
-                  alt="about"
-                  className="w-full h-36 object-cover"
-                />
-              </CardContent>
-            </Card>
-
+          {/* RIGHT */}
+          <div className="flex justify-center md:justify-center -translate-x-1">
+            <img
+              src={aboutImage}
+              alt="About"
+              className="
+                w-full
+                max-w-lg
+                h-[650px]
+                object-cover
+                rounded-3xl
+                -translate-y-17
+                hover:scale-[1.02]
+                transition-all
+                duration-300
+              "
+            />
           </div>
+
         </div>
-      </div>
+      </section>
     </div>
   );
 }

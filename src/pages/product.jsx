@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import TemplateCard from "@/components/template-card";
+import { getProducts } from "@/services/product.service";
 
 export default function Templates() {
   const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [wishlistIds, setWishlistIds] = useState([]);
 
   const fetchProducts = async () => {
-    const res = await api.get("/api/products/");
-    setProducts(res.data.data || []);
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const fetchWishlist = async () => {
@@ -22,7 +28,10 @@ export default function Templates() {
 
   useEffect(() => {
     fetchProducts();
-    if (localStorage.getItem("token")) fetchWishlist();
+
+    if (localStorage.getItem("token")) {
+      fetchWishlist();
+    }
   }, []);
 
   return (
@@ -41,7 +50,11 @@ export default function Templates() {
             onToggleWishlist={async (id) => {
               if (!localStorage.getItem("token"))
                 return navigate("/login");
-              await api.post("/wishlist/toggle", { product_id: id });
+
+              await api.post("/wishlist/toggle", {
+                product_id: id,
+              });
+
               fetchWishlist();
             }}
           />

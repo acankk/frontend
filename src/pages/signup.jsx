@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/api";
 import { ENDPOINTS } from "@/lib/endpoints";
+import { ArrowLeft } from "lucide-react";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -117,6 +118,14 @@ export default function SignUp() {
                 Login
               </span>
             </p>
+            <button
+              onClick={() => navigate("/")}
+              className="mx-auto flex items-center gap-2 text-sm text-gray-400 hover:text-white transition"
+            >
+              <ArrowLeft size={16} />
+              Back to Home
+            </button>
+          
 
           </div>
         </div>
